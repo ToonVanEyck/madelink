@@ -1,0 +1,27 @@
+{
+    "actionButtons": {
+        "commands": [
+            {
+                "name": "🔨 Build",
+                "command": "cmake -S ${workspaceFolder} -B ${workspaceFolder}/build/lib -DCMAKE_BUILD_TYPE=Release -Wno-dev && cmake --build ${workspaceFolder}/build/lib",
+                "terminalName": "bash"
+            },
+            {
+                "name": "🧪 Test",
+                "command": "cmake -S ${workspaceFolder} -B ${workspaceFolder}/build/tests -DCMAKE_BUILD_TYPE=Debug -Wno-dev && cmake --build ${workspaceFolder}/build/tests && ctest --test-dir ${workspaceFolder}/build/tests -VV",
+                "terminalName": "bash",
+            },
+            {
+                "name": "📊 Coverage",
+                "command": "cmake -S ${workspaceFolder} -B ${workspaceFolder}/build/tests -DCMAKE_BUILD_TYPE=Debug -Wno-dev && cmake --build ${workspaceFolder}/build/tests --target coverage && ls ${workspaceFolder}/build/tests/coverage/index.html",
+                "terminalName": "bash",
+            },
+        ]
+    },
+    "cSpell.words": [
+        "madelink"
+    ],
+    "editor.formatOnSave": true,
+    "C_Cpp.clang_format_path": "/usr/bin/clang-format",
+    "C_Cpp.formatting": "clangFormat"
+}

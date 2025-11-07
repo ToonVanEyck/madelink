@@ -1,0 +1,29 @@
+{
+    "name": "madelink",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": "."
+    },
+    "remoteUser": "madelink",
+    "containerUser": "madelink",
+    "extensions": [
+        "ms-vscode.cmake-tools",
+        "ms-vscode.cpptools",
+        "ms-vscode.vscode-serial-monitor",
+        "streetsidesoftware.code-spell-checker",
+        "jkearins.action-buttons-ext",
+    ],
+    "runArgs": [
+        "--privileged",
+        "--hostname=madelink",
+        "--name=madelink"
+    ],
+    "mounts": [
+        "source=${localEnv:HOME}/.bashrc,target=/home/madelink/.bashrc,type=bind,consistency=cached",
+        "source=/dev,target=/dev,type=bind,consistency=cached",
+        "source=/run/udev,target=/run/udev,type=bind,consistency=cached",
+        "source=/etc/udev/rules.d,target=/etc/udev/rules.d,type=bind,consistency=cached",
+        "source=${localWorkspaceFolder}/.devcontainer/.vscode,target=${containerWorkspaceFolder}/.vscode,type=bind,consistency=cached",
+    ],
+    "postStartCommand": "/workspaces/madelink/.devcontainer/bashrc_addons_add.sh"
+}

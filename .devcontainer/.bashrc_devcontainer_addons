@@ -1,0 +1,3 @@
+figlet -f 3d.flf MadeLink
+export PATH="/home/${USER}/.vscode-server/extensions/ms-vscode.cpptools-1.22.9-linux-x64/LLVM/bin/:$PATH"
+echo "🌼🔗 Madelink dev environment 🌼🔗"
