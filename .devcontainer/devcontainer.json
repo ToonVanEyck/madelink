@@ -12,6 +12,7 @@
         "ms-vscode.vscode-serial-monitor",
         "streetsidesoftware.code-spell-checker",
         "jkearins.action-buttons-ext",
+        "bierner.markdown-mermaid"
     ],
     "runArgs": [
         "--privileged",
