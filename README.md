@@ -2,7 +2,7 @@
 
 Madelink is a daisy-chainable master-slave protocol using serial communication (UART) for connecting multiple microcontroller-based devices.
 
-![Madelink Logo](madelink-logo.svg)
+![Madelink Logo](images/madelink-logo.svg)
 
 Madelink is a portmanteau of "madeliefje" (Dutch for daisy) and "link" (part of a chain). 
 
@@ -117,6 +117,25 @@ stateDiagram-v2
     TX_PROP --> RX_HEADER 
 ```
 
+#### Example
+
+This example shows a master reading property 0x03 from a chain of two nodes. We read 0x00 from the first node and 0x01 from the second node.
+
+**1. The master sends the READ header with node count 0.**
+
+![Read Header Example](images/read-header.png)
+
+We can clearly see each node increments the node count by one and the header bytes are forwarded before the node has received the complete header.
+
+**2. Nodes respond with their property data.**
+
+![Read Full Example](images/read-full.png)
+
+Here we see how each node appends its property data in order. The first node immediately starts transmitting its property data after forwarding the header. The second node waits for the first node's property data to be completely forwarded before it starts transmitting its own property data.
+
+In this example the payload is a single byte, an extra CS byte is added. In this case 2 bytes are required for the COBS encoding, making the total payload length 4 bytes.
+
+
 ### The WRITE action
 
 The master starts the transmission by sending a WRITE message header with the total number of nodes in the chain as the node count. Each node decrements the node count by one when it retransmits the message. The master then transmits the property payloads for each node in the chain, starting at the data for the last node in the chain. If the master does not have data for a specific node, it transmits a 0x00 byte which is an empty COBS encoded payload.
@@ -127,11 +146,32 @@ If the staging bit was not set in the header, the node immediately commits the d
 
 When the message returns to the master, the node count should be zero and no payloads more property payloads should be received by the master.
 
+#### Example
+
+This example shows a master writing property 0x05 to a chain of two nodes. 0x01 is written to node 1 and 0x02 to node 2.
+
+![Write Example](images/write-example.png)
+
+The master writes the header with node count 2, each node decrements the node count by one. The master then transmits the property payloads for each node in reverse order. Each node writes its property data when its internal node count reaches zero. We can see the payload for the second node (Data: 02) is being retransmitted by the first node. We don't see the payload for the first node (Data: 01) being retransmitted as it is consumed by the first node.
+The second node only retransmits the header as it is the last node in the chain.
+
+![Write Sync Ack Example](images/write-sync-ack-example.png)
+
+When the master finished writing the property data, it can send a SYNC ACK message to check if any node reported an error during the write operation. The node will not retransmit this sync header until it has finished writing the property data. When an error occurs, the node sets the error code field in the header to a non-zero value. The master can then use the READ action with the error bit set to query the exact error code and the state in which it occurred from each node.
+
 ### The BROADCAST action
 
 The master starts the transmission by sending a BROADCAST message header with node count zero. Each node increments the node count by one in a similar way as with the READ action. The master then transmits a single property payload which is intended for all nodes in the chain. The payload is retransmitted by each node until it returns to the master. 
 
 If the staging bit was not set in the header, the node immediately commits the data. Otherwise it waits for a SYNC COMMIT action from the master. 
+
+#### Example
+
+This example shows the master brodadcasting property 0x05 with data 0x00 to a chain of two nodes.
+
+![Broadcast Example](images/broadcast-example.png)
+
+Here we can see the header being forwarded in the same way as with the READ action. The master then transmits the property payload which is retransmitted by each node in the chain.
 
 ### The SYNC action
 
